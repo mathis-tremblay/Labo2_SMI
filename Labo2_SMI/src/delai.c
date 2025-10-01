@@ -1,6 +1,6 @@
 #include "delai.h"
 
-extern volatile uint64_t millis_count;
+volatile uint64_t millis_count = 0;
 
 /*
  * RVR (LOAD) : nombre a partir du lequel la clock decremente
@@ -14,6 +14,8 @@ void SysTick_Init(uint64_t load_value){
 
 	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;
 	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
+
+
 }
 
 uint64_t millis(){

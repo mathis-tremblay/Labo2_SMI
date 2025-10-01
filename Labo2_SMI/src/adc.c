@@ -8,7 +8,7 @@
  * La conversion débute par logiciel (Software)
  * L’interruption EOC doit être activée
  */
-void ADC_Init(ADC_TypeDef * ADCx, uint8_t channel){
+void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel){
 	// Activer horloge ADC correspondante
 	if (ADCx == ADC1) RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
 	else if (ADCx == ADC2) RCC->APB2ENR |= RCC_APB2ENR_ADC2EN;

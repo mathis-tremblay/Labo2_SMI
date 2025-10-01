@@ -12,7 +12,7 @@
  *
  * */
 
-void ADC_Init(ADC_TypeDef * ADCx, uint8_t channel);
+void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel);
 
 void ADC_StartConvert(void);
 
