@@ -32,6 +32,7 @@ SOFTWARE.
 #include "stm32f4xx.h"
 #include <stdbool.h>
 #include "adc.h"
+#include "delai.h"
 
 #define P1
 
@@ -51,9 +52,19 @@ int main(void)
 {
 	#ifdef P1
 	GPIO_Config(GPIOC, 3, 3, 0, 0); // Mode 3 pour analog
-	ADC_Init(ADC1, 13);
+	ADC_Config(ADC1, 13);
+	SysTick_Init(9000); // interruption à chaque 1ms
+	uint32_t conversion_count = 0;
+	uint32_t sample = 0;
 	while (1){
-
+		if (millis() > conversion_count*100 ){ // 1 conversion a chaque 100ms
+			conversion_count++;
+			ADC_StartConvert(ADC1);
+		}
+		if(ADC_IsReady()){
+			sample = ADC_GetSample(ADC1);
+			// Breakpoint ici pour avoir valeur sample
+		}
 	}
 	#endif
 }
