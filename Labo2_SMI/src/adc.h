@@ -14,10 +14,10 @@
 
 void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel);
 
-void ADC_StartConvert(void);
+void ADC_StartConvert(ADC_TypeDef * ADCx);
 
-uint32_t ADC_GetSample(void);
+uint32_t ADC_GetSample(ADC_TypeDef * ADCx);
 
-void ADC_IRQHandler(void);
+void ADC_IRQHandler(ADC_TypeDef * ADCx);
 
 #endif /* ADC_H_ */

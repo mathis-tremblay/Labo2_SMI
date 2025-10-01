@@ -1,6 +1,9 @@
 #import "macros_utiles.h"
 #import "adc.h"
 
+static volatile uint32_t adc_sample = 0;
+static volatile uint8_t adc_ready = 0;
+
 /*
  * Un seul canal (Channel), donc une séquence d’une seule conversion
  * Pas de DMA 12 bits aligné à droite
@@ -9,6 +12,7 @@
  * L’interruption EOC doit être activée
  */
 void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel){
+
 	// Activer horloge ADC correspondante
 	if (ADCx == ADC1) RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
 	else if (ADCx == ADC2) RCC->APB2ENR |= RCC_APB2ENR_ADC2EN;
@@ -43,14 +47,30 @@ void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel){
 	NVIC_SetPriority(ADC_IRQn, 0);
 }
 
-void ADC_StartConvert(void){
-	//ADC_STRT
+void ADC_StartConvert(ADC_TypeDef * ADCx){
+	// Clear flag EOC
+    ADCx->SR &= ~BIT1;
+
+    // Lancer conversion
+    ADCx->CR2 |= BIT30;
 }
 
-uint32_t ADC_GetSample(void){
+uint32_t ADC_GetSample(ADC_TypeDef * ADCxvoid){
+	// Attendre une interruption
+	while(!adc_ready);
 
+	adc_ready = 0;
+	return adc_sample;
 }
 
-void ADC_IRQHandler(void){
+void ADC_IRQHandler(ADC_TypeDef * ADCx){
+	if (ADCx->SR & BIT1) {
+		// Lire donnée
+	    adc_sample = ADCx->DR;
 
+	    // Signaler échantillon dispo
+	    adc_ready = 1;
+
+	    // Lecture DR clear le flag EOC
+	}
 }
