@@ -1,12 +1,7 @@
-/*
- * adc.h
- *
- *  Created on: 29 sept. 2025
- *      Author: mathi
- */
-
 #ifndef ADC_H_
 #define ADC_H_
+
+#include "stm32f4xx.h"
 
 /*
  * - Pas de variable globale! Préférez l’utilisation du mot clé « static » si vous avez besoin d’une variable partagée entre les fonctions d’un même module
@@ -17,5 +12,12 @@
  *
  * */
 
+void ADC_Init(ADC_TypeDef * ADCx, uint8_t channel);
+
+void ADC_StartConvert(void);
+
+uint32_t ADC_GetSample(void);
+
+void ADC_IRQHandler(void);
 
 #endif /* ADC_H_ */

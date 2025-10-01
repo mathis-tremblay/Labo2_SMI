@@ -31,7 +31,7 @@ SOFTWARE.
 #include "GPIO.h"
 #include "stm32f4xx.h"
 #include <stdbool.h>
-#include "delai.h"
+#include "adc.h"
 
 #define P1
 
@@ -51,7 +51,7 @@ int main(void)
 {
 	#ifdef P1
 	GPIO_Config(GPIOC, 3, 3, 0, 0); // Mode 3 pour analog
-
+	ADC_Init(ADC1, 13);
 	while (1){
 
 	}
