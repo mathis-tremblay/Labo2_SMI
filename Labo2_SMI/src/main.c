@@ -33,6 +33,7 @@ SOFTWARE.
 #include <stdbool.h>
 #include "adc.h"
 #include "delai.h"
+#include "pwm.h"
 
 #define P1
 
@@ -67,4 +68,31 @@ int main(void)
 		}
 	}
 	#endif
+	{
+	#ifdef PARTIE_2_PWM   // pour bien délimiter la section du lab
+	    // Initialisation du module PWM
+	    PWM_Init();
+
+
+	    // Cas 1 : Duty = 25 %, Freq = 100 Hz
+
+	    // PWM_SetFrequency(100);
+	    // PWM_SetDutyCycle(25);
+	    // while(1);
+
+	    // Cas 2 : Duty = 63 %, Freq = 400 Hz
+
+	    // PWM_SetFrequency(400);
+	    // PWM_SetDutyCycle(63);
+	    // while(1);
+
+	    // Cas 3 : Duty = 88 %, Freq = 1 kHz
+
+	    PWM_SetFrequency(1000);
+	    PWM_SetDutyCycle(88);
+
+	    while (1) {
+	    }
+	#endif
+
 }
