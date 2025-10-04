@@ -1,12 +1,12 @@
 #include "pwm.h"
 #include "stm32f4xx.h"   // Def des registres STM32F429
 
-// Freq de clock de base (à ajuster selon la config du RCC de ton projet)
-#define SYS_CLOCK_FREQ 16000000UL
+// Freq de clock de base (Trouver empiriquement avec oscilloscope)
+#define SYS_CLOCK_FREQ 28800000UL
 
 // Sauvegarde des valeurs courantes
-static uint32_t current_freq = 1000;   // par défaut 1 kHz
-static uint8_t current_duty = 50;      // par défaut 50%
+static uint32_t current_freq = 1000;   // par dÃ©faut 1 kHz
+static uint8_t current_duty = 50;      // par dÃ©faut 50%
 
 void PWM_Init(void) {
     // 1. Activer clock du GPIOA
@@ -28,7 +28,7 @@ void PWM_Init(void) {
 
     // 5. Configurer le canal 1 en mode PWM1
     TIM2->CCMR1 &= ~TIM_CCMR1_OC1M;
-    TIM2->CCMR1 |= (0x6 << TIM_CCMR1_OC1M_Pos);  // PWM mode 1
+    TIM2->CCMR1 |= (0x6 << 4);			  // PWM mode 1
     TIM2->CCMR1 |= TIM_CCMR1_OC1PE;              // Preload enable
 
     TIM2->CCER |= TIM_CCER_CC1E;   // Activer sortie canal 1
@@ -41,7 +41,7 @@ void PWM_Init(void) {
 }
 
 void PWM_SetDutyCycle(uint8_t duty) {
-    if (duty > 100) duty = 100;   // clamp 0–100%
+    if (duty > 100) duty = 100;   // clamp 0â€“100%
     current_duty = duty;
     TIM2->CCR1 = (duty * (TIM2->ARR + 1)) / 100;
 }
