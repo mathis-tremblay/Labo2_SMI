@@ -2,7 +2,7 @@
 #include "stm32f4xx.h"   // Def des registres STM32F429
 
 // Freq de clock de base (Trouver empiriquement avec oscilloscope)
-#define SYS_CLOCK_FREQ 28800000UL
+#define SYS_CLOCK_FREQ 72000000UL
 
 // Sauvegarde des valeurs courantes
 static uint32_t current_freq = 1000;   // par défaut 1 kHz

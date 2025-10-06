@@ -58,11 +58,14 @@ int main(void)
 
 	SysTick_Init(9000); // interruption a chaque 1ms
 	GPIO_Config(GPIOC, 3, 3, 0, 0); // Mode 3 pour analog
+	GPIO_Config(GPIOG, 13, 1, 0, 0); // LED
 
 	ADC_Config(ADC1, 13);
 	int conversion_count = 0;
 	uint32_t sample = 0;
 	uint64_t time = 0;
+	int LED = 1;
+	GPIO_writePIN(GPIOG, 13, LED);
 	while (1){
 		time = millis();
 		if (time > conversion_count*100){ // 1 conversion a chaque 100ms
@@ -71,6 +74,8 @@ int main(void)
 		}
 		if(ADC_IsReady()){
 			sample = ADC_GetSample(ADC1);
+			LED = !LED;
+			GPIO_writePIN(GPIOG, 13, LED);
 			// Breakpoint ici pour avoir valeur sample
 		}
 	}
@@ -83,14 +88,14 @@ int main(void)
 
 	    // Cas 1 : Duty = 25 %, Freq = 100 Hz
 
-	    PWM_SetFrequency(100);
-	    PWM_SetDutyCycle(25);
+//	    PWM_SetFrequency(100);
+//	    PWM_SetDutyCycle(25);
 	    // while(1);
 
 	    // Cas 2 : Duty = 63 %, Freq = 400 Hz
 
-	    PWM_SetFrequency(400);
-	    PWM_SetDutyCycle(63);
+//	    PWM_SetFrequency(400);
+//	    PWM_SetDutyCycle(63);
 	    // while(1);
 
 	    // Cas 3 : Duty = 88 %, Freq = 1 kHz
