@@ -48,9 +48,6 @@ void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel){
 }
 
 void ADC_StartConvert(ADC_TypeDef * ADCx){
-	// Clear flag EOC
-    ADCx->SR &= ~BIT1;
-
     // Lancer conversion
     ADCx->CR2 |= BIT30;
 }
@@ -59,20 +56,16 @@ uint8_t ADC_IsReady(void){
     return adc_ready;
 }
 
-uint32_t ADC_GetSample(ADC_TypeDef * ADCxvoid){
+uint32_t ADC_GetSample(ADC_TypeDef * ADCx){
 	// Attendre une interruption
-	while(!adc_ready);
-
 	adc_ready = 0;
 	return adc_sample;
 }
 
-void ADC_IRQHandler(ADC_TypeDef * ADCx){
-	if (ADCx->SR & BIT1) {
-		// Lire donnée (Lecture DR clear le flag EOC)
-	    adc_sample = ADCx->DR;
-
-	    // Signaler échantillon dispo
-	    adc_ready = 1;
-	}
+void ADC_IRQHandler(void) {
+    if (ADC1->SR & ADC_SR_EOC) {       // EOC = End Of Conversion flag
+        adc_sample = ADC1->DR;         // Lecture du DR efface le flag EOC
+        adc_ready = 1;
+    }
 }
+

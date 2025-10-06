@@ -1,6 +1,6 @@
 #include "delai.h"
 
-volatile uint64_t millis_count = 0;
+extern volatile uint64_t millis_count;
 
 /*
  * RVR (LOAD) : nombre a partir du lequel la clock decremente (9000=1ms)
@@ -26,5 +26,5 @@ void delai(uint64_t wait_millis){
 }
 
 void SysTick_Handler(void){
-	millis_count++;
+	millis_count = millis_count + 1;
 }

@@ -18,6 +18,6 @@ void ADC_StartConvert(ADC_TypeDef * ADCx);
 
 uint32_t ADC_GetSample(ADC_TypeDef * ADCx);
 
-void ADC_IRQHandler(ADC_TypeDef * ADCx);
+void ADC_IRQHandler(void);
 
 #endif /* ADC_H_ */

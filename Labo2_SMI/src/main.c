@@ -50,41 +50,47 @@ SOFTWARE.
 **
 **===========================================================================
 */
+volatile uint64_t millis_count = 0;
+
 int main(void)
 {
-//	#ifdef P1
-//	GPIO_Config(GPIOC, 3, 3, 0, 0); // Mode 3 pour analog
-//	ADC_Config(ADC1, 13);
-//	SysTick_Init(9000); // interruption à chaque 1ms
-//	uint32_t conversion_count = 0;
-//	uint32_t sample = 0;
-//	while (1){
-//		if (millis() > conversion_count*100 ){ // 1 conversion a chaque 100ms
-//			conversion_count++;
-//			ADC_StartConvert(ADC1);
-//		}
-//		if(ADC_IsReady()){
-//			sample = ADC_GetSample(ADC1);
-//			// Breakpoint ici pour avoir valeur sample
-//		}
-//	}
-//	#endif
-//	{
-	// #ifdef PARTIE_2_PWM   // pour bien délimiter la section du lab
+	#ifdef P1
+
+	SysTick_Init(9000); // interruption a chaque 1ms
+	GPIO_Config(GPIOC, 3, 3, 0, 0); // Mode 3 pour analog
+
+	ADC_Config(ADC1, 13);
+	int conversion_count = 0;
+	uint32_t sample = 0;
+	uint64_t time = 0;
+	while (1){
+		time = millis();
+		if (time > conversion_count*100){ // 1 conversion a chaque 100ms
+			conversion_count = conversion_count + 1;
+			ADC_StartConvert(ADC1);
+		}
+		if(ADC_IsReady()){
+			sample = ADC_GetSample(ADC1);
+			// Breakpoint ici pour avoir valeur sample
+		}
+	}
+	#endif
+	{
+	#ifdef P2   // pour bien délimiter la section du lab
 	    // Initialisation du module PWM
 	    PWM_Init();
 
 
 	    // Cas 1 : Duty = 25 %, Freq = 100 Hz
 
-//	     PWM_SetFrequency(100);
-//	     PWM_SetDutyCycle(25);
+	    PWM_SetFrequency(100);
+	    PWM_SetDutyCycle(25);
 	    // while(1);
 
 	    // Cas 2 : Duty = 63 %, Freq = 400 Hz
 
-//	     PWM_SetFrequency(400);
-//	     PWM_SetDutyCycle(63);
+	    PWM_SetFrequency(400);
+	    PWM_SetDutyCycle(63);
 	    // while(1);
 
 	    // Cas 3 : Duty = 88 %, Freq = 1 kHz
@@ -93,6 +99,6 @@ int main(void)
 
 	    while (1) {
 	    }
-	// #endif
-
+	#endif
+	}
 }
