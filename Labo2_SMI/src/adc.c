@@ -43,8 +43,7 @@ void ADC_Config(ADC_TypeDef * ADCx, uint8_t channel){
 	ADCx->CR2 |= BIT0;
 
 	// Activer NVIC
-	NVIC_EnableIRQ(ADC_IRQn);
-	NVIC_SetPriority(ADC_IRQn, 0);
+	NVIC->ISER[0] = BIT18;
 }
 
 void ADC_StartConvert(ADC_TypeDef * ADCx){

@@ -36,7 +36,7 @@ SOFTWARE.
 #include "pwm.h"
 #include <stdio.h>
 
-#define P1
+#define P3
 
 /* Private macro */
 /* Private variables */
@@ -80,7 +80,7 @@ int main(void)
 		}
 	}
 	#endif
-	{
+
 	#ifdef P2   // pour bien dÃ©limiter la section du lab
 	    // Initialisation du module PWM
 	    PWM_Init();
@@ -102,32 +102,28 @@ int main(void)
 	    PWM_SetFrequency(1000);
 	    PWM_SetDutyCycle(88);
 
-	    while (1) {
-	    }
 	#endif
-	}
-	{
+
 	#ifdef P3
 	ControleurLED_Init();
 
 	    /* Boucle principale :
-	       - Si bouton pressÃ© -> lire ADC -> appliquer intensity
-	       - Si relÃ¢chÃ© -> Ã©teindre LED
-	       - Ã‰chantillonnage ~ 10 Hz (delai 100 ms) comme requis */
+	       - Si bouton pressé -> lire ADC -> appliquer intensité
+	       - Si relacher -> éteindre LED
+	       - Échantillonnage 10 Hz*/
 	    while (1) {
-	        uint8_t btn_state = GPIO_readPIN(GPIOA, 0); /* bouton PA0 */
+	        uint8_t btn_state = GPIO_readPIN(GPIOA, 0);
 
 	        if (btn_state) {
-	            /* Bouton pressÃ© -> lire ADC et appliquer intensitÃ© */
+	            // bouton appuyé, lire ADC et appliquer intensité
 	            ControleurLED_UpdateFromADCAndApply();
 	        } else {
-	            /* Bouton relÃ¢chÃ© -> Ã©teindre LED */
+	            // bouton relaché, éteindre LED
 	            ControleurLED_Off();
 	        }
 
-	        delai(100); /* 100 ms => 10 Hz */
-	    while (1) {
+	        delai(100); // 100 ms pour freq de 10Hz
 	    }
 	 #endif
-		}
 }
+
