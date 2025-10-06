@@ -106,4 +106,28 @@ int main(void)
 	    }
 	#endif
 	}
+	{
+	#ifdef P3
+	ControleurLED_Init();
+
+	    /* Boucle principale :
+	       - Si bouton pressé -> lire ADC -> appliquer intensity
+	       - Si relâché -> éteindre LED
+	       - Échantillonnage ~ 10 Hz (delai 100 ms) comme requis */
+	    while (1) {
+	        uint8_t btn_state = GPIO_readPIN(GPIOA, 0); /* bouton PA0 */
+
+	        if (btn_state) {
+	            /* Bouton pressé -> lire ADC et appliquer intensité */
+	            ControleurLED_UpdateFromADCAndApply();
+	        } else {
+	            /* Bouton relâché -> éteindre LED */
+	            ControleurLED_Off();
+	        }
+
+	        delai(100); /* 100 ms => 10 Hz */
+	    while (1) {
+	    }
+	 #endif
+		}
 }
