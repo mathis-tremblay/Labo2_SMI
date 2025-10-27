@@ -8,6 +8,6 @@
 
 void GPIO_writePIN(GPIO_TypeDef *GPIOx, uint16_t pin, uint8_t state);
 uint8_t GPIO_readPIN(GPIO_TypeDef *GPIOx, uint8_t pin);
-void GPIO_Config(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t mode, uint8_t pupd, uint8_t speed);
+void GPIO_Config(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t mode, uint8_t pupd, uint8_t speed, uint8_t af);
 
 #endif // GPIO_H

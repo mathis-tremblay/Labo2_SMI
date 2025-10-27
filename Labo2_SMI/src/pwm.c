@@ -9,34 +9,25 @@ static uint32_t current_freq = 1000;   // par dÃ©faut 1 kHz
 static uint8_t current_duty = 50;      // par dÃ©faut 50%
 
 void PWM_Init(void) {
-    // 1. Activer clock du GPIOA
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-
-    // 2. Mettre PA5 en mode Alternate Function (AF1 = TIM2_CH1)
-    GPIOA->MODER &= ~(0x3 << (5 * 2));
-    GPIOA->MODER |=  (0x2 << (5 * 2));   // Alternate Function
-
-    GPIOA->AFR[0] &= ~(0xF << (5 * 4));
-    GPIOA->AFR[0] |=  (0x1 << (5 * 4));  // AF1 = TIM2_CH1
-
-    // 3. Activer la clock de TIM2
+    // 1. Activer la clock du TIM2
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 
-    // 4. Configurer le Timer2 pour PWM
-    TIM2->PSC = (SYS_CLOCK_FREQ / (current_freq * 1000)) - 1; // prescaler
-    TIM2->ARR = 1000 - 1;    // Periode fixer a 1000 pas (resolution duty cycle 0-1000)
+    // 2. Configurer le Timer2 pour PWM
+    TIM2->PSC = (SYS_CLOCK_FREQ / (current_freq * 1000)) - 1;  // Prescaler
+    TIM2->ARR = 1000 - 1;  // Période = 1000 (résolution duty cycle 0–1000)
 
-    // 5. Configurer le canal 1 en mode PWM1
+    // 3. Configurer le canal 1 en mode PWM1
     TIM2->CCMR1 &= ~TIM_CCMR1_OC1M;
-    TIM2->CCMR1 |= (0x6 << 4);			  // PWM mode 1
-    TIM2->CCMR1 |= TIM_CCMR1_OC1PE;              // Preload enable
+    TIM2->CCMR1 |= (0x6 << 4);           // PWM mode 1
+    TIM2->CCMR1 |= TIM_CCMR1_OC1PE;      // Preload enable
 
-    TIM2->CCER |= TIM_CCER_CC1E;   // Activer sortie canal 1
+    // 4. Activer la sortie du canal 1
+    TIM2->CCER |= TIM_CCER_CC1E;
 
-    // 6. Mettre un duty cycle par defaut
+    // 5. Définir le duty cycle par défaut
     TIM2->CCR1 = (current_duty * (TIM2->ARR + 1)) / 100;
 
-    // 7. Activer le compteur
+    // 6. Activer le compteur
     TIM2->CR1 |= TIM_CR1_CEN;
 }
 

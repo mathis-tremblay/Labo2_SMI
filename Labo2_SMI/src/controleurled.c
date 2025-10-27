@@ -27,16 +27,17 @@ void ControleurLED_Init(void) {
     SysTick_Init(9000);
 
     // 2) Configurer pin du potentiometre en mode analogique (PC3)
-    GPIO_Config(ADC_PIN_PORT, ADC_PIN, 3, 0 , 0);
+    GPIO_Config(ADC_PIN_PORT, ADC_PIN, 3, 0, 0, 0);
 
     // 3) Configurer l'ADC1 channel 13
     ADC_Config(ADC_INSTANCE, ADC_CHANNEL);
 
-    // 4) Initialiser le PWM (PA5)
+    // 4) Initialiser le PWM et sa pin (PA5)
+    GPIO_Config(GPIOA, 5, 2, 0, 2, 1);
     PWM_Init();
 
     // 5) Configurer le bouton en entrée
-    GPIO_Config(BTN_PORT, BTN_PIN, 0 /* input */, 0 /* pull-down */, 0 /* speed */);
+    GPIO_Config(BTN_PORT, BTN_PIN, 0 /* input */, 0 /* pull-down */, 0 /* speed */, 0 /* af mode*/);
 
     // Init led fermé
     PWM_SetDutyCycle(0);

@@ -36,7 +36,7 @@ SOFTWARE.
 #include "pwm.h"
 #include <stdio.h>
 
-#define P3
+#define P1
 
 /* Private macro */
 /* Private variables */
@@ -57,8 +57,8 @@ int main(void)
 	#ifdef P1
 
 	SysTick_Init(9000); // interruption a chaque 1ms
-	GPIO_Config(GPIOC, 3, 3, 0, 0); // Mode 3 pour analog
-	GPIO_Config(GPIOG, 13, 1, 0, 0); // LED
+	GPIO_Config(GPIOC, 3, 3, 0, 0, 0); // Mode 3 pour analog
+	GPIO_Config(GPIOG, 13, 1, 0, 0, 0); // LED
 
 	ADC_Config(ADC1, 13);
 	int conversion_count = 0;

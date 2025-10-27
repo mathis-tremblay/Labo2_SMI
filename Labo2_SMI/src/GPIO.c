@@ -37,7 +37,7 @@ void GPIO_writePIN(GPIO_TypeDef *GPIOx, uint16_t pin, uint8_t state) {
 // mode : 0 = input, 1 = output, 2 = alternate, 3 = analog
 // pupd : 0 = no pull, 1 = pull-up, 2 = pull-down
 // speed : 0 = low speed, 1 = medium speed, 2 : high speed, 3 : very high speed
-void GPIO_Config(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t mode, uint8_t pupd, uint8_t speed) {
+void GPIO_Config(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t mode, uint8_t pupd, uint8_t speed, uint8_t af) {
     // Activer l'horloge du port concerné (RCC->AHB1ENR)
     if (GPIOx == GPIOA) RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     else if (GPIOx == GPIOB) RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
@@ -60,6 +60,15 @@ void GPIO_Config(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t mode, uint8_t pupd, u
     // Configurer OSPEEDR
     GPIOx->OSPEEDR &= ~(0b11 << (pin * 2));
     GPIOx->OSPEEDR |=  ((speed & 0b11) << (pin * 2));
+
+    // setup alternate functions
+    if (mode == 2) {
+            uint8_t afr_index = (pin < 8) ? 0 : 1; // choisir entre AFR low (0) ou high (1)
+            uint8_t afr_shift = (pin % 8) * 4;
+
+            GPIOx->AFR[afr_index] &= ~(0xF << afr_shift);
+            GPIOx->AFR[afr_index] |=  ((af & 0xF) << afr_shift);
+        }
 }
 
 uint8_t GPIO_readPIN(GPIO_TypeDef *GPIOx, uint8_t pin) {
