@@ -8,6 +8,6 @@
 #ifndef UART_H_
 #define UART_H_
 
-
+void UART5_Config();
 
 #endif /* UART_H_ */

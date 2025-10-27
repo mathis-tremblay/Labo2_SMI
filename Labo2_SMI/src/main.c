@@ -55,6 +55,14 @@ volatile uint64_t millis_count = 0;
 int main(void)
 {
 	#ifdef P1
+	// Config UART5 : PC12 pour le tx, PD2 pour le rx
+
+	#endif
+}
+
+/*
+ * Labo 2 :
+#ifdef P1
 
 	SysTick_Init(9000); // interruption a chaque 1ms
 	GPIO_Config(GPIOC, 3, 3, 0, 0, 0); // Mode 3 pour analog
@@ -107,10 +115,10 @@ int main(void)
 	#ifdef P3
 	ControleurLED_Init();
 
-	    /* Boucle principale :
-	       - Si bouton pressé -> lire ADC -> appliquer intensité
-	       - Si relacher -> éteindre LED
-	       - Échantillonnage 10 Hz*/
+	    // Boucle principale :
+	    //   - Si bouton pressé -> lire ADC -> appliquer intensité
+	    //   - Si relacher -> éteindre LED
+	    //   - Échantillonnage 10 Hz
 	    while (1) {
 	        uint8_t btn_state = GPIO_readPIN(GPIOA, 0);
 
@@ -125,5 +133,5 @@ int main(void)
 	        delai(100); // 100 ms pour freq de 10Hz
 	    }
 	 #endif
-}
+ */
 
