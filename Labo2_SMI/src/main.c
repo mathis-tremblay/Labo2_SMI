@@ -35,6 +35,7 @@ SOFTWARE.
 #include "delai.h"
 #include "pwm.h"
 #include <stdio.h>
+#include "uart.h"
 
 #define P1
 
@@ -55,7 +56,36 @@ volatile uint64_t millis_count = 0;
 int main(void)
 {
 	#ifdef P1
-	// Config UART5 : PC12 pour le tx, PD2 pour le rx
+	SysTick_Init(9000); // interruption a chaque 1ms
+	UART5_Config();
+
+	uint8_t data_recu;
+	uint64_t last_hello = millis();
+	uint64_t timestamp = millis();
+	const char *hello = "Hello World!\n";
+
+	while(1){
+		timestamp = millis();
+		if (timestamp - last_hello > 1000){ // envoie périodique de Hello World
+			for (uint32_t i = 0; hello[i] != '\0'; i++){
+				UART5_SendByte(hello[i]);
+			}
+			last_hello = timestamp;
+		}
+
+		// renvoie des données reçues
+		data_recu = UART5_ReadByte();
+		if (data_recu != 0) {
+			UART5_SendByte(data_recu);
+		}
+	}
+	#endif
+
+	#ifdef P2
+
+	#endif
+
+	#ifdef P3
 
 	#endif
 }

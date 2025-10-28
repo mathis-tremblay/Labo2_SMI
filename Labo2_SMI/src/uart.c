@@ -96,7 +96,7 @@ void UART5_IRQHandler(void){
 		}
 	}
 	if (UART5->SR & BIT5){ // réception en attente
-		data = (uint8_t)(UART5->DR & 0xFF); // 8 premier bits du registre DR
+		data = (uint8_t)(UART5->DR & 0xFF); // 8 premier bits du registre DR, lire DR réinitialise le flag RXNE
 		_fifo_push(&uart5_rx_fifo, data);
 	}
 }
