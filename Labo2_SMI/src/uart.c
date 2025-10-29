@@ -25,13 +25,11 @@ void _fifo_push(FIFO* f, uint8_t data){
 	}
 }
 
-uint8_t _fifo_pop(FIFO* f){
-	uint8_t data = 0;
-	if (!_fifo_vide(f)){
-		data = f->buffer[f->queue];
-		f->queue = (f->queue + 1) % UART5_FIFO_TAILLE;
-	}
-	return data; // 0 si fifo vide
+int _fifo_pop(FIFO* f, uint8_t* out){
+    if (_fifo_vide(f)) return 0;
+    *out = f->buffer[f->queue];
+    f->queue = (f->queue + 1) % UART5_FIFO_TAILLE;
+    return 1;
 }
 
 void UART5_Config(){
@@ -60,8 +58,8 @@ void UART5_Config(){
 	UART5->CR2 &= ~BIT13;
 
 	// 5. Baudrate de 115200 (APB1 a un prescaler de 4 selon system_stm32f4xx.c)
-	UART5->BRR &= 0;
-	UART5->BRR |= (int)((SYS_CLOCK_FREQ/4.0) / (115200.0f*16.0)); //TODO : vérif que ça fonctionne
+	UART5->BRR = (uint16_t)(((SYS_CLOCK_FREQ / 4.0f) / (16.0f * 115200)) * 16.0f);
+
 
 	// 6. activer transmitter et receiver
 	UART5->CR1 |= BIT3;
@@ -76,25 +74,26 @@ void UART5_Config(){
 
 void UART5_SendByte(uint8_t data) {
     _fifo_push(&uart5_tx_fifo, data);
-    UART5->CR1 |= BIT7; // activer TX interrupt pour dire que transmission prête
+    UART5->CR1 |= BIT7; // activer TXE interrupt
 }
 
 uint8_t UART5_ReadByte(void) {
-    return _fifo_pop(&uart5_rx_fifo);
+    uint8_t data = 0;
+    _fifo_pop(&uart5_rx_fifo, &data);
+    return data;
 }
 
 // verifie flag pour savoir si transmission ou réception
 void UART5_IRQHandler(void){
 	uint8_t data;
-	if (UART5->SR & BIT7){ // transmission prête
-		data = _fifo_pop(&uart5_tx_fifo);
-		if (data == 0){ // rien a envoyer
-			UART5->CR1 &= ~BIT7;
-		}
-		else {
-			UART5->DR |= data;
-		}
-	}
+	uint8_t txdata;
+	if (UART5->SR & BIT7){ // TXE
+	    if (_fifo_pop(&uart5_tx_fifo, &txdata)){
+	        UART5->DR = txdata & 0xFF;
+	    } else {
+	        UART5->CR1 &= ~BIT7;       // plus rien à envoyer, couper l'interrupt TXE
+	    }
+	    }
 	if (UART5->SR & BIT5){ // réception en attente
 		data = (uint8_t)(UART5->DR & 0xFF); // 8 premier bits du registre DR, lire DR réinitialise le flag RXNE
 		_fifo_push(&uart5_rx_fifo, data);

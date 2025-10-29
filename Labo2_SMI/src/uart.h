@@ -18,8 +18,7 @@ int _fifo_vide(FIFO* f);
 
 void _fifo_push(FIFO* f, uint8_t data);
 
-uint8_t _fifo_pop(FIFO* f);
-
+int _fifo_pop(FIFO* f, uint8_t* out);
 
 void UART5_Config();
 
