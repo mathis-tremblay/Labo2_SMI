@@ -69,7 +69,7 @@ void UART5_Config(){
 	UART5->CR1 |= BIT13;
 
 	// activer interrupt NVIC
-	NVIC_EnableIRQ(UART5_IRQn);
+	NVIC->ISER[1] = BIT21;
 }
 
 void UART5_SendByte(uint8_t data) {
