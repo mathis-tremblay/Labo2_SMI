@@ -82,6 +82,13 @@ int main(void)
 	#endif
 
 	#ifdef P2
+	// Configuration des pins GPIO avec SPI5
+	GPIO_Config(GPIOD, 13,1, 0, 3, 0); // WRX
+	GPIO_Config(GPIOC, 2, 1, 0, 3, 0); // CSX
+	GPIO_Config(GPIOF, 7, 2, 0, 3, 5); // SCLK
+	GPIO_Config(GPIOF, 8, 2, 0, 3, 5); // MISO
+	GPIO_Config(GPIOF, 9, 2, 0, 3, 5); // MOSI
+
 
 	#endif
 
