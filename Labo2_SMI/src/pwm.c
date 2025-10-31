@@ -1,7 +1,7 @@
 #include "pwm.h"
 #include "stm32f4xx.h"   // Def des registres STM32F429
 
-// Freq de clock de base (Trouver empiriquement avec oscilloscope)
+// Freq de clock de base
 #define SYS_CLOCK_FREQ 72000000UL
 
 // Sauvegarde des valeurs courantes

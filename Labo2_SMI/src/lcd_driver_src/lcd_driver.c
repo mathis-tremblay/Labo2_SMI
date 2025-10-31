@@ -9,7 +9,7 @@
 
 
 #include "lcd_driver.h"
-
+#include "delai.h"
 
 // variables locales
 static uint16_t frame_buffer[LCD_BUF_LEN];
@@ -37,8 +37,8 @@ void LCD_InitSerialInterface(void)
 	//SOFTWARE RESET
 	ILI9341_send_command(0x01);
 
-	// TODO utiliser votre module de delai pour 1 seconde
-	Time_Delay(1000);
+	// Utiliser votre module de delai pour 1 seconde [DONE]
+	delai(1000);
 
 	//POWER CONTROL A
 	ILI9341_send_command(LCD_POWERA);
@@ -159,8 +159,8 @@ void LCD_InitSerialInterface(void)
 	//EXIT SLEEP
 	ILI9341_send_command(LCD_SLEEP_OUT);
 
-	// TODO utilisez votre module delai pour 120 ms
-	Time_Delay(120);
+	// utilisez votre module delai pour 120 ms [DONE]
+	delai(120);
 
 	//TURN ON DISPLAY
 	ILI9341_send_command(LCD_DISPLAY_ON);
@@ -168,8 +168,8 @@ void LCD_InitSerialInterface(void)
 	//STARTING ROTATION
 	ILI9341_send_command(0x36);
 
-	// TODO utilisez votre module delai pour 2 ms
-	Time_Delay(2);
+	//utilisez votre module delai pour 2 ms [DONE]
+	delai(2);
 
 	ILI9341_send_data(0x80|0x08);
 }
@@ -271,9 +271,9 @@ void LCD_SetAddress(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2)
 
 void LCD_InitGPIO(void)
 {
-	// TODO
 	// Fonction pour initialiser les GPIO CS et WRX.
-	// Utilisez votre pilote GPIO!
+	GPIO_Config(GPIOD, 13,1, 0, 3, 0); // WRX
+	GPIO_Config(GPIOC, 2, 1, 0, 3, 0); // CSX
 }
 
 
