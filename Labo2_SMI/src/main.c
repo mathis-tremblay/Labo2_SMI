@@ -91,8 +91,8 @@ int main(void)
 	GPIO_Config(GPIOF, 9, 2, 0, 3, 5); // MOSI
 
 	// Initialisation du module SPI
-	SPI_Init();
-
+	SPI_Init(SPI5);
+	SPI_Config(SPI5, 1, 16, 0, 0, 0, 0, 1, 0, 1);
 
 	#endif
 

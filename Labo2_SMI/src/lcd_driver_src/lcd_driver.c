@@ -271,9 +271,9 @@ void LCD_SetAddress(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2)
 
 void LCD_InitGPIO(void)
 {
-	// Fonction pour initialiser les GPIO CS et WRX.
+	// Fonction pour initialiser les GPIO CS et WRX. [DONE]
 	GPIO_Config(GPIOD, 13,1, 0, 3, 0); // WRX
-	GPIO_Config(GPIOC, 2, 1, 0, 3, 0); // CSX
+	GPIO_Config(GPIOC, 2, 1, 0, 3, 0); // CSX (CS)
 }
 
 
