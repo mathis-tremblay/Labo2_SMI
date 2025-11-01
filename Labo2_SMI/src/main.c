@@ -39,7 +39,7 @@ SOFTWARE.
 #include "spi.h"
 #include "lcd_driver.h"
 
-#define P1
+#define P2
 
 /* Private macro */
 /* Private variables */
@@ -94,6 +94,17 @@ int main(void)
 	SPI_Init(SPI5);
 	SPI_Config(SPI5, 1, 16, 0, 0, 0, 0, 1, 0, 1);
 
+	// Initialisation LCD
+	LCD_InitSerialInterface();
+	LCD_CopyColorToFrameBuffer(63488); // Rouge
+	LCD_TransmitFrameBuffer();
+	delai(1000);
+	LCD_CopyColorToFrameBuffer(49183); // Mauve
+	LCD_TransmitFrameBuffer();
+	delai(1000);
+	LCD_CopyColorToFrameBuffer(2047); // Turquoise
+	LCD_TransmitFrameBuffer();
+	delai(1000);
 	#endif
 
 	#ifdef P3
