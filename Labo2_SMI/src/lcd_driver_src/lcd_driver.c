@@ -10,6 +10,8 @@
 
 #include "lcd_driver.h"
 #include "delai.h"
+#include "spi.h"
+#include "GPIO.h"
 
 // variables locales
 static uint16_t frame_buffer[LCD_BUF_LEN];
@@ -279,22 +281,33 @@ void LCD_InitGPIO(void)
 
 ///////////////Fonctions statiques ///////////////////
 
+// Toujours SPI5 pour le LCD (Pas le choix)
+#define LCD_SPI     SPI5
+
+// CSX = PC2, WRX = PD13
+#define LCD_CS_PORT   GPIOC
+#define LCD_CS_PIN    2
+#define LCD_WRX_PORT  GPIOD
+#define LCD_WRX_PIN   13
+
 static void LCD_CS_HIGH(void)
 {
-	// TODO
+	GPIO_writePIN(LCD_CS_PORT,  LCD_CS_PIN,  1);
 }
 
 static void LCD_CS_LOW(void)
 {
-	// TODO
+	GPIO_writePIN(LCD_CS_PORT,  LCD_CS_PIN,  0);
 }
+
 static void LCD_WRX_HIGH(void)
 {
-	// TODO
+	GPIO_writePIN(LCD_WRX_PORT, LCD_WRX_PIN, 1);
 }
+
 static void LCD_WRX_LOW(void)
 {
-	// TODO
+	GPIO_writePIN(LCD_WRX_PORT, LCD_WRX_PIN, 0);
 }
 
 

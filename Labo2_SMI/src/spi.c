@@ -13,6 +13,8 @@ void SPI_Init(SPI_TypeDef *SPIx)
 }
 
 
+
+
 // mode : 0 = slave, 1 = master
 // data_size : 8 = 8 bits, 16 = 16 bits
 // cpol : 0 = horloge idle bas, 1 = idle haut
@@ -26,14 +28,14 @@ void SPI_Config(SPI_TypeDef *SPIx, uint8_t mode, uint8_t data_size, uint8_t cpol
                 uint8_t prescaler, uint8_t lsb_first, uint8_t ssm_enable, uint8_t motorola_mode,
 				uint8_t enable_periph)
 {
-    // 1️ Desactiver le SPI pendant configuration
+    // Desactiver le SPI pendant configuration
     SPIx->CR1 &= ~SPI_CR1_SPE;
 
-    // 2️ Nettoyer CR1 et CR2
+    // Nettoyer CR1 et CR2
     SPIx->CR1 = 0;
     SPIx->CR2 = 0;
 
-    // 3️ Configurer CR1 (registre principal)
+    // Configurer CR1 (registre principal)
     uint32_t cr1 = 0;
 
     // Master ou slave
@@ -61,20 +63,69 @@ void SPI_Config(SPI_TypeDef *SPIx, uint8_t mode, uint8_t data_size, uint8_t cpol
 
     // Configurer CR2 (format Motorola / TI)
     uint32_t cr2 = 0;
-    if (motorola_mode)
+    if (motorola_mode) {
         cr2 |= SPI_CR2_FRF;  // 1 = TI frame format
-    else
+    }
+    else {
         cr2 &= ~SPI_CR2_FRF; // 0 = Motorola
+    }
 
     SPIx->CR2 = cr2;
 
     // Configurer si les peripheriques sont enables
-    if (enable_periph)
+    if (enable_periph) {
     	SPIx->CR1 |= SPI_CR1_SPE;
-    else
+    }
+    else {
     	SPIx->CR1 &= ~SPI_CR1_SPE;
-
-    // Activer le SPI
-    SPIx->CR1 |= SPI_CR1_SPE;
+    }
 }
 
+
+
+
+#ifndef SPI_TX_TIMEOUT
+#define SPI_TX_TIMEOUT  (1000000UL)
+#endif
+
+void SPI_Transmit(const void *data, size_t nbytes)
+{
+    const uint8_t *p8  = (const uint8_t *)data;
+    const uint16_t *p16 = (const uint16_t *)data;
+    uint32_t guard;
+
+    // Verifier si SPI configurer en 8 ou 16 bits (bit DFF du CR1)
+    uint8_t is16bit = (LCD_SPI->CR1 & SPI_CR1_DFF) ? 1 : 0;
+
+    if (!is16bit) {
+        // ======== MODE 8 BITS ========
+        for (size_t i = 0; i < nbytes; ++i) {
+            guard = SPI_TX_TIMEOUT;
+            while ((LCD_SPI->SR & SPI_SR_TXE) == 0) {
+                if (--guard == 0) return;  // timeout TXE
+            }
+            *(__IO uint8_t *)&LCD_SPI->DR = *p8++;
+        }
+    }
+    else {
+        // ======== MODE 16 BITS ========
+        size_t count = nbytes / 2;
+        for (size_t i = 0; i < count; ++i) {
+            guard = SPI_TX_TIMEOUT;
+            while ((LCD_SPI->SR & SPI_SR_TXE) == 0) {
+                if (--guard == 0) return;  // timeout TXE
+            }
+            *(__IO uint16_t *)&LCD_SPI->DR = *p16++;
+        }
+    }
+
+    // Attendre la fin matérielle du dernier bit (BSY=0)
+    guard = SPI_TX_TIMEOUT;
+    while (LCD_SPI->SR & SPI_SR_BSY) {
+        if (--guard == 0) break;
+    }
+
+    // Flush RX pour éviter OVR
+    (void)LCD_SPI->DR;
+    (void)LCD_SPI->SR;
+}
