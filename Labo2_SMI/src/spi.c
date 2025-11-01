@@ -1,7 +1,7 @@
 #include "spi.h"
 #include "stm32f4xx.h"   // Def des registres STM32F429
 
-void SPI_Init(SPI_TypeDef *SPIx)
+void SPI_EnableClock(SPI_TypeDef *SPIx)
 {
     // Activer horloge SPI (APB1 ou APB2)
     if (SPIx == SPI1) RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
@@ -10,6 +10,11 @@ void SPI_Init(SPI_TypeDef *SPIx)
     else if (SPIx == SPI4) RCC->APB2ENR |= RCC_APB2ENR_SPI4EN;
     else if (SPIx == SPI5) RCC->APB2ENR |= RCC_APB2ENR_SPI5EN;
     else if (SPIx == SPI6) RCC->APB2ENR |= RCC_APB2ENR_SPI6EN;
+
+    // force la prise en compte avant tout accès au SPIx (ChatGPT voulait ca, aucune idee pk)
+    (void)RCC->APB2ENR;   // pour SPI1/4/5/6
+    (void)RCC->APB1ENR;
+    __asm volatile("dsb");
 }
 
 
@@ -63,13 +68,13 @@ void SPI_Config(SPI_TypeDef *SPIx, uint8_t mode, uint8_t data_size, uint8_t cpol
 
     // Configurer CR2 (format Motorola / TI)
     uint32_t cr2 = 0;
-    if (motorola_mode) {
-        cr2 |= SPI_CR2_FRF;  // 1 = TI frame format
+    if (motorola_mode == 0) {
+        // Mode Motorola (par default sur STM32F4)
+        cr2 = 0;
+    } else {
+        // Mode TI (non supporté sur STM32F429)
+        // Rien a faire, ignorer
     }
-    else {
-        cr2 &= ~SPI_CR2_FRF; // 0 = Motorola
-    }
-
     SPIx->CR2 = cr2;
 
     // Configurer si les peripheriques sont enables
@@ -95,16 +100,16 @@ void SPI_Transmit(const void *data, size_t nbytes)
     uint32_t guard;
 
     // Verifier si SPI configurer en 8 ou 16 bits (bit DFF du CR1)
-    uint8_t is16bit = (LCD_SPI->CR1 & SPI_CR1_DFF) ? 1 : 0;
+    uint8_t is16bit = (SPI5->CR1 & SPI_CR1_DFF) ? 1 : 0;
 
     if (!is16bit) {
         // ======== MODE 8 BITS ========
         for (size_t i = 0; i < nbytes; ++i) {
             guard = SPI_TX_TIMEOUT;
-            while ((LCD_SPI->SR & SPI_SR_TXE) == 0) {
+            while ((SPI5->SR & SPI_SR_TXE) == 0) {
                 if (--guard == 0) return;  // timeout TXE
             }
-            *(__IO uint8_t *)&LCD_SPI->DR = *p8++;
+            *(__IO uint8_t *)&SPI5->DR = *p8++;
         }
     }
     else {
@@ -112,20 +117,20 @@ void SPI_Transmit(const void *data, size_t nbytes)
         size_t count = nbytes / 2;
         for (size_t i = 0; i < count; ++i) {
             guard = SPI_TX_TIMEOUT;
-            while ((LCD_SPI->SR & SPI_SR_TXE) == 0) {
+            while ((SPI5->SR & SPI_SR_TXE) == 0) {
                 if (--guard == 0) return;  // timeout TXE
             }
-            *(__IO uint16_t *)&LCD_SPI->DR = *p16++;
+            *(__IO uint16_t *)&SPI5->DR = *p16++;
         }
     }
 
     // Attendre la fin matÃ©rielle du dernier bit (BSY=0)
     guard = SPI_TX_TIMEOUT;
-    while (LCD_SPI->SR & SPI_SR_BSY) {
+    while (SPI5->SR & SPI_SR_BSY) {
         if (--guard == 0) break;
     }
 
     // Flush RX pour Ã©viter OVR
-    (void)LCD_SPI->DR;
-    (void)LCD_SPI->SR;
+    (void)SPI5->DR;
+    (void)SPI5->SR;
 }

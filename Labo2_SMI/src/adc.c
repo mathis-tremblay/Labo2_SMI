@@ -1,5 +1,5 @@
-#import "macros_utiles.h"
-#import "adc.h"
+#include "macros_utiles.h"
+#include "adc.h"
 
 static volatile uint32_t adc_sample = 0;
 static volatile uint8_t adc_ready = 0;
