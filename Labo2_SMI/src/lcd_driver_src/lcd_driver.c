@@ -276,6 +276,9 @@ void LCD_InitGPIO(void)
 	// Fonction pour initialiser les GPIO CS et WRX. [DONE]
 	GPIO_Config(GPIOD, 13,1, 0, 3, 0); // WRX
 	GPIO_Config(GPIOC, 2, 1, 0, 3, 0); // CSX (CS)
+
+    GPIO_writePIN(GPIOC, 2, 1);
+    GPIO_writePIN(GPIOD,13,1);
 }
 
 

@@ -84,6 +84,16 @@ int main(void)
 	#endif
 
 	#ifdef P2
+
+	/* ========================================ATTENTION========================================
+	 *
+	 * Pour une meilleur immersion, merci de blaster "Pursuit Of Happiness (nightmare edition)"
+	 * lors da la compilation et du test de cette partie.
+	 *
+	 * =========================================================================================
+	 */
+
+	SysTick_Init(SystemCoreClock);
 	// Configuration des pins GPIO avec SPI5
 	LCD_InitGPIO();
 	GPIO_Config(GPIOF, 7, 2, 0, 3, 5); // SCLK
@@ -99,14 +109,14 @@ int main(void)
 	while(1){
 		LCD_CopyColorToFrameBuffer(63488); // Rouge
 		LCD_TransmitFrameBuffer();
+		delai(1000);
+		LCD_CopyColorToFrameBuffer(49183); // Mauve
+		LCD_TransmitFrameBuffer();
+		delai(1000);
+		LCD_CopyColorToFrameBuffer(2047); // Turquoise
+		LCD_TransmitFrameBuffer();
+		delai(1000);
 	}
-//	delai(1000);
-//	LCD_CopyColorToFrameBuffer(49183); // Mauve
-//	LCD_TransmitFrameBuffer();
-//	delai(1000);
-//	LCD_CopyColorToFrameBuffer(2047); // Turquoise
-//	LCD_TransmitFrameBuffer();
-//	delai(1000);
 	#endif
 
 	#ifdef P3
