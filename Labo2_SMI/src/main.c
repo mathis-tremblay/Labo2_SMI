@@ -38,8 +38,11 @@ SOFTWARE.
 #include "uart.h"
 #include "spi.h"
 #include "lcd_driver_src/lcd_driver.h"
+#include "affichage.h"
 
-#define P2
+//#define P1
+//#define P2
+#define P3
 
 /* Private macro */
 /* Private variables */
@@ -68,14 +71,14 @@ int main(void)
 
 	while(1){
 		timestamp = millis();
-		if (timestamp - last_hello > 1000){ // envoie périodique de Hello World
+		if (timestamp - last_hello > 1000){ // envoie pï¿½riodique de Hello World
 			for (uint32_t i = 0; hello[i] != '\0'; i++){
 				UART5_SendByte(hello[i]);
 			}
 			last_hello = timestamp;
 		}
 
-		// renvoie des données reçues
+		// renvoie des donnï¿½es reï¿½ues
 		data_recu = UART5_ReadByte();
 		if (data_recu != 0) {
 			UART5_SendByte(data_recu);
@@ -120,6 +123,17 @@ int main(void)
 	#endif
 
 	#ifdef P3
+	SysTick_Init(SystemCoreClock);
+	Affichage_Init();
+	Affichage_SetBgColor(0, 0, 0);
+	Affichage_SetCharColor(31, 63, 31);
+	Affichage_CharBgWrite('a', 20, 20);
+	Affichage_CharBgWrite('l', 31, 20);
+	Affichage_CharBgWrite('l', 42, 20);
+	Affichage_CharBgWrite('o', 53, 20);
+	while (1)
+	{
+	}
 
 	#endif
 }
@@ -180,17 +194,17 @@ int main(void)
 	ControleurLED_Init();
 
 	    // Boucle principale :
-	    //   - Si bouton pressé -> lire ADC -> appliquer intensité
-	    //   - Si relacher -> éteindre LED
-	    //   - Échantillonnage 10 Hz
+	    //   - Si bouton pressï¿½ -> lire ADC -> appliquer intensitï¿½
+	    //   - Si relacher -> ï¿½teindre LED
+	    //   - ï¿½chantillonnage 10 Hz
 	    while (1) {
 	        uint8_t btn_state = GPIO_readPIN(GPIOA, 0);
 
 	        if (btn_state) {
-	            // bouton appuyé, lire ADC et appliquer intensité
+	            // bouton appuyï¿½, lire ADC et appliquer intensitï¿½
 	            ControleurLED_UpdateFromADCAndApply();
 	        } else {
-	            // bouton relaché, éteindre LED
+	            // bouton relachï¿½, ï¿½teindre LED
 	            ControleurLED_Off();
 	        }
 
