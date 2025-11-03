@@ -53,3 +53,7 @@ dkms.conf
 /Debug/
 *.metadata
 .metadata/
+
+.settings/language.settings.xml
+Debug/Labo2_SMI.list
+Labo2_SMI.elf.launch
