@@ -39,6 +39,8 @@ SOFTWARE.
 #include "spi.h"
 #include "lcd_driver_src/lcd_driver.h"
 #include "affichage.h"
+#include "string.h"
+#include "stdlib.h"
 
 //#define P1
 //#define P2
@@ -61,7 +63,7 @@ volatile uint64_t millis_count = 0;
 int main(void)
 {
 	#ifdef P1
-	SysTick_Init(9000); // interruption a chaque 1ms
+	SysTick_Init(SystemCoreClock);
 	UART5_Config();
 
 	uint8_t data_recu;
@@ -125,18 +127,117 @@ int main(void)
 	#ifdef P3
 	SysTick_Init(SystemCoreClock);
 	Affichage_Init();
-	Affichage_SetBgColor(0, 0, 0);
-	Affichage_SetCharColor(31, 63, 31);
-	Affichage_CharBgWrite('a', 20, 20);
-	Affichage_CharBgWrite('l', 31, 20);
-	Affichage_CharBgWrite('l', 42, 20);
-	Affichage_CharBgWrite('o', 53, 20);
+	UART5_Config();
+
+	Affichage_SetBgColor(31, 63, 31);
+	Affichage_SetCharColor(0, 0, 0);
+	Affichage_UpdateBg();
+
+	char rx_buffer[256];
+	int rx_index = 0;
+	uint8_t data_recu;
+	memset(rx_buffer, 0, 256);
+	rx_index = 0;
+//
+//	Affichage_ProcessString("TEST LCD\n");
+//	UART5_SendByte('T');
+
+
 	while (1)
 	{
+		data_recu = UART5_ReadByte();
+		if (data_recu != 0)
+		{
+			UART5_SendByte(data_recu);
+
+			if (data_recu == '\n' || data_recu == '\r')
+			{
+				rx_buffer[rx_index] = (char)data_recu;
+				rx_buffer[rx_index + 1] = '\0';
+
+				Affichage_ProcessString(rx_buffer);
+
+				memset(rx_buffer, 0, 256);
+				rx_index = 0;
+			}
+			else if (rx_index < 256 - 2)
+			{
+				rx_buffer[rx_index] = (char)data_recu;
+				rx_index++;
+			}
+		}
 	}
 
 	#endif
 }
+
+// ---------- EXEMPLE DE CODE POUR COMMUNIQUER D'UN LAPTOP PAR PORT SERIE POUR P3 -------------------
+//#!/usr/bin/env python3
+//
+//"""
+//serial_write.py
+//
+//this program demonstrates how to write a message to a serial port on linux
+//with specific settings: 115200 baud, 7 data bits, even parity, 1 stop bit.
+//
+//how to install prerequisites:
+//pip install pyserial
+//
+//how to run:
+//sudo python3 serial_write.py
+//(you might need sudo permissions to access /dev/ttyusb0)
+//"""
+//
+//import serial
+//import time
+//import sys
+//
+//# --- configuration ---
+//port = "/dev/ttyusb0"
+//baudrate = 115200
+//data_bits = serial.sevenbits  # 7 data bits
+//parity = serial.parity_even   # even parity
+//stop_bits = serial.stopbits_one # 1 stop bit
+//message = "sc310000bc006300ca marche enfin\n"
+//
+//def main():
+//    print(f"attempting to open port {port} at {baudrate} baud...")
+//
+//    try:
+//        # open the serial port with the specified settings
+//        with serial.serial(
+//            port=port,
+//            baudrate=baudrate,
+//            bytesize=data_bits,
+//            parity=parity,
+//            stopbits=stop_bits,
+//            timeout=1,      # read timeout (not used for writing, but good to set)
+//            write_timeout=1 # write timeout
+//        ) as ser:
+//
+//            print(f"port {ser.name} opened successfully.")
+//
+//            # encode the message string to bytes
+//            message_bytes = message.encode('utf-8')
+//
+//            # write the bytes to the serial port
+//            bytes_written = ser.write(message_bytes)
+//
+//            # ser.flush() # ensure all data is sent
+//            print(f"message sent: '{message.strip()}' ({bytes_written} bytes)")
+//
+//    except serial.serialexception as e:
+//        print(f"error: could not open or write to port {port}.", file=sys.stderr)
+//        print(f"details: {e}", file=sys.stderr)
+//        print("hint: do you have permissions? try running with 'sudo'.", file=sys.stderr)
+//        sys.exit(1)
+//    except exception as e:
+//        print(f"an unexpected error occurred: {e}", file=sys.stderr)
+//        sys.exit(1)
+//
+//if __name__ == "__main__":
+//    main()
+
 
 /*
  * Labo 2 :
