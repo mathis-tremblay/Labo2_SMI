@@ -49,39 +49,39 @@ void SDRAM_Init(void){
 
 	// Étape 1 : config FMC_SDCR1
 	// RPIPE à 1
-	FMC_SDCR1 &= ~BIT13;
-	FMC->SDCR[1] &= ~BIT14;
-	FMC->SDCR[1] |= BIT13;
+	FMC_Bank5_6->SDCR[0] &= ~BIT13;
+	FMC_Bank5_6->SDCR[0] &= ~BIT14;
+	FMC_Bank5_6->SDCR[0] |= BIT13;
 
 	// Clk a HCLK/2
-	FMC->SDCR[1] &= ~BIT11;
-	FMC->SDCR[1] &= ~BIT10;
-	FMC->SDCR[1] |= BIT11;
+	FMC_Bank5_6->SDCR[0] &= ~BIT11;
+	FMC_Bank5_6->SDCR[0] &= ~BIT10;
+	FMC_Bank5_6->SDCR[0] |= BIT11;
 
 	// NCAS à 3 coups d'horloges
-	FMC->SDCR[1] &= ~BIT8;
-	FMC->SDCR[1] &= ~BIT7;
-	FMC->SDCR[1] |= BIT7;
-	FMC->SDCR[1] |= BIT8;
+	FMC_Bank5_6->SDCR[0] &= ~BIT8;
+	FMC_Bank5_6->SDCR[0] &= ~BIT7;
+	FMC_Bank5_6->SDCR[0] |= BIT7;
+	FMC_Bank5_6->SDCR[0] |= BIT8;
 
 	// désactiver burst mode
-	FMC->SDCR[1] &= ~BIT12;
+	FMC_Bank5_6->SDCR[0] &= ~BIT12;
 
 	// désactiver write protection
-	FMC->SDCR[1] &= ~BIT9;
+	FMC_Bank5_6->SDCR[0] &= ~BIT9;
 
 	// number of banks = 4
-	FMC->SDCR[1] |= BIT6;
+	FMC_Bank5_6->SDCR[0] |= BIT6;
 
 	// bus de données de 16 bits
-	FMC->SDCR[1] &= ~BIT5;
-	FMC->SDCR[1] |= BIT4;
+	FMC_Bank5_6->SDCR[0] &= ~BIT5;
+	FMC_Bank5_6->SDCR[0] |= BIT4;
 
 	// 12 lignes d'adresse
-	FMC->SDCR[1] &= ~BIT3;
-	FMC->SDCR[1] |= BIT2;
+	FMC_Bank5_6->SDCR[0] &= ~BIT3;
+	FMC_Bank5_6->SDCR[0] |= BIT2;
 
 	// 8 colonnes d'adresse
-	FMC->SDCR[1] &= ~BIT1;
-	FMC->SDCR[1] &= ~BIT0;
+	FMC_Bank5_6->SDCR[0] &= ~BIT1;
+	FMC_Bank5_6->SDCR[0] &= ~BIT0;
 }
