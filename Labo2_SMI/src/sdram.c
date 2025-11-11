@@ -51,34 +51,31 @@ void SDRAM_Init(void){
 	GPIO_Config(GPIOE, 0, 2, 0, 3, 12); // NBL0
 	GPIO_Config(GPIOE, 1, 2, 0, 3, 12); // NBL1
 
-	while(FMC_Bank5_6->SDSR & FMC_SDSR_BUSY); // vÃ©rifiez que le FMC nâ€™est pas occup
-	// Ã‰tape 1 : config FMC_SDCR1
-	// RPIPE Ã  1
-	FMC_Bank5_6->SDCR[1] &= ~BIT13;
+	while(FMC_Bank5_6->SDSR & FMC_SDSR_BUSY); // verifiez que le FMC pas occup
+
+	// Etape 1 : config FMC_SDCR1
+	// RPIPE a 1
 	FMC_Bank5_6->SDCR[1] &= ~BIT14;
 	FMC_Bank5_6->SDCR[1] |= BIT13;
 
 	// Clk a HCLK/2
-	FMC_Bank5_6->SDCR[1] &= ~BIT11;
 	FMC_Bank5_6->SDCR[1] &= ~BIT10;
 	FMC_Bank5_6->SDCR[1] |= BIT11;
 
-	// NCAS Ã  3 coups d'horloges
-	FMC_Bank5_6->SDCR[1] &= ~BIT8;
-	FMC_Bank5_6->SDCR[1] &= ~BIT7;
+	// NCAS a 3 coups d'horloges
 	FMC_Bank5_6->SDCR[1] |= BIT7;
 	FMC_Bank5_6->SDCR[1] |= BIT8;
 
-	// dÃ©sactiver burst mode
+	// desactiver burst mode
 	FMC_Bank5_6->SDCR[1] &= ~BIT12;
 
-	// dÃ©sactiver write protection
+	// desactiver write protection
 	FMC_Bank5_6->SDCR[1] &= ~BIT9;
 
 	// number of banks = 4
 	FMC_Bank5_6->SDCR[1] |= BIT6;
 
-	// bus de donnÃ©es de 16 bits
+	// bus de donnees de 16 bits
 	FMC_Bank5_6->SDCR[1] &= ~BIT5;
 	FMC_Bank5_6->SDCR[1] |= BIT4;
 
@@ -90,7 +87,7 @@ void SDRAM_Init(void){
 	FMC_Bank5_6->SDCR[1] &= ~BIT1;
 	FMC_Bank5_6->SDCR[1] &= ~BIT0;
 
-	// Ã‰tape 2
+	// Etape 2
 	// Trcd 1 cycle
 	FMC_Bank5_6->SDTR[1] &= ~BIT27;
 	FMC_Bank5_6->SDTR[1] &= ~BIT26;
@@ -133,40 +130,41 @@ void SDRAM_Init(void){
 	FMC_Bank5_6->SDTR[1] &= ~BIT1;
 	FMC_Bank5_6->SDTR[1] |= BIT0;
 
-	// Ã‰tape 3 : Set MODE bits to '001' and configure the Target Bank bits (CTB1 and/or CTB2) in the
+	// Etape 3 : Set MODE bits to '001' and configure the Target Bank bits (CTB1 and/or CTB2) in the
 	// 		FMC_SDCMR register to start delivering the clock to the memory (SDCKE is driven high).
 	FMC_Bank5_6->SDCMR &= ~BIT2;
 	FMC_Bank5_6->SDCMR &= ~BIT1;
-	FMC_Bank5_6->SDCMR &= ~BIT0;
 	FMC_Bank5_6->SDCMR |= BIT0;
 	FMC_Bank5_6->SDCMR |= BIT3;
 
-	// Ã‰tape 4 : Wait during the prescribed delay period. Typical delay is around 100 Î¼s (refer to the
+	// Etape 4 : Wait during the prescribed delay period. Typical delay is around 100us (refer to the
 	// 		SDRAM datasheet for the required delay after power-up).
 	delai(1);
 
-	// Ã‰tape 5 : Set MODE bits to '010' and configure the Target Bank bits (CTB1 and/or CTB2) in the
-	// 		FMC_SDCMR register to issue a â€œPrecharge Allâ€� command.
+	// Etape 5 : Set MODE bits to '010' and configure the Target Bank bits (CTB1 and/or CTB2) in the
+	// 		FMC_SDCMR register to issue a Precharge All command.
+	FMC_Bank5_6->SDCMR &= ~BIT3;
 	FMC_Bank5_6->SDCMR &= ~BIT2;
-	FMC_Bank5_6->SDCMR &= ~BIT1;
 	FMC_Bank5_6->SDCMR &= ~BIT0;
 	FMC_Bank5_6->SDCMR |= BIT1;
 	FMC_Bank5_6->SDCMR |= BIT3;
+	while (FMC_Bank5_6->SDSR & FMC_SDSR_BUSY);
 
-	// Ã‰tape 6 : Set MODE bits to '011', and configure the Target Bank bits (CTB1 and/or CTB2) as well
+	// Etape 6 : Set MODE bits to '011', and configure the Target Bank bits (CTB1 and/or CTB2) as well
 	// 		as the number of consecutive Auto-refresh commands (NRFS) in the FMC_SDCMR
 	// 		register. (Selon datasheet sdram, 2 auto-refresh minimum necessaires. On prend 8)
+	FMC_Bank5_6->SDCMR &= ~BIT3;
 	FMC_Bank5_6->SDCMR &= ~BIT2;
-	FMC_Bank5_6->SDCMR &= ~BIT1;
-	FMC_Bank5_6->SDCMR &= ~BIT0;
 	FMC_Bank5_6->SDCMR |= BIT1;
 	FMC_Bank5_6->SDCMR |= BIT0;
 	FMC_Bank5_6->SDCMR |= BIT3;
+	// Nb auto-refresh
 	FMC_Bank5_6->SDCMR |= BIT5;
 	FMC_Bank5_6->SDCMR |= BIT6;
 	FMC_Bank5_6->SDCMR |= BIT7;
+	while (FMC_Bank5_6->SDSR & FMC_SDSR_BUSY);
 
-	// Ã‰tape 7 : Configure the MRD field according to your SDRAM device, set the MODE bits to '100',
+	// Etape 7 : Configure the MRD field according to your SDRAM device, set the MODE bits to '100',
 	// 		and configure the Target Bank bits (CTB1 and/or CTB2) in the FMC_SDCMR register
 	// 		to issue a "Load Mode Register" command in order to program the SDRAM. In particular:
 	// 			a) The CAS latency must be selected following configured value in FMC_SDCR1/2 registers
@@ -175,6 +173,7 @@ void SDRAM_Init(void){
 	//	 			the same for both SDRAM banks, this step has to be repeated twice, once for
 	// 				each bank, and the Target Bank bits set accordingly
 	// Commande 0x231
+	FMC_Bank5_6->SDCMR &= ~BIT3;
 	FMC_Bank5_6->SDCMR |= BIT9;
 	FMC_Bank5_6->SDCMR &= ~BIT10;
 	FMC_Bank5_6->SDCMR &= ~BIT11;
@@ -189,32 +188,27 @@ void SDRAM_Init(void){
 	FMC_Bank5_6->SDCMR &= ~BIT20;
 	FMC_Bank5_6->SDCMR &= ~BIT21;
 	// Mode 100
-	FMC_Bank5_6->SDCMR &= ~BIT2;
 	FMC_Bank5_6->SDCMR &= ~BIT1;
 	FMC_Bank5_6->SDCMR &= ~BIT0;
 	FMC_Bank5_6->SDCMR |= BIT2;
 	// Target bank 2 (CTB2)
 	FMC_Bank5_6->SDCMR |= BIT3;
+	while (FMC_Bank5_6->SDSR & FMC_SDSR_BUSY);
 
-	// Ã‰tape 8 : Program the refresh rate in the FMC_SDRTR register
+	// Etape 8 : Program the refresh rate in the FMC_SDRTR register
 	// Refresh rate = (tref/Nlignes * fclk)-20 = 542,5 => 542
 	uint16_t refresh_count = 542;
 	FMC_Bank5_6->SDRTR = refresh_count << 1;
-
-	// Ã‰tape 9 pas Ã  faire (pas une mobile SDRAM)
 }
-void SDRAM_Write(uint32_t address, uint16_t data) {
 
+void SDRAM_Write(uint32_t address, uint16_t data) {
     if (address < 0x00800000) // 8 Mo maximum pour IS42S16400J (64 Mbits = 8 MB)
     	*(__IO uint16_t*)(SDRAM_BASE_ADDR + address) = data;
-
 }
-
 
 
 uint16_t SDRAM_Read(uint32_t address)
 {
-
     if (address >= 0x00800000)
         return 0xFFFF; // Valeur d’erreur arbitraire
 
@@ -234,10 +228,12 @@ void SDRAM_WriteArray(uint32_t address, const uint16_t* data, uint32_t length)
     // Tronquer si ça depasse la taille de la SDRAM (evite overflow)
     uint32_t bytes_left   = SDRAM_SIZE_BYTES - address;
     uint32_t words_left   = bytes_left >> 1;            // bytes_left / 2
-    if (length > words_left) length = words_left;
+    if (length > words_left) {
+    	length = words_left;
+    }
 
     // Ecriture sequentielle
     for (uint32_t i = 0; i < length; ++i) {
             SDRAM_Write(address + (i << 1), data[i]);
-        }
+    }
 }
