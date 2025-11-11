@@ -3,7 +3,7 @@
 #include "uart.h"
 #include "macros_utiles.h"
 
-#define SYS_CLOCK_FREQ 72000000.0f // fréquence de base
+#define SYS_CLOCK_FREQ 72000000.0f // frï¿½quence de base
 
 // init fifo
 static FIFO uart5_rx_fifo = { .tete = 0, .queue = 0 };
@@ -40,7 +40,7 @@ void UART5_Config(){
 	GPIO_Config(GPIOC, 12, 2, 0, 2, 8);
 	GPIO_Config(GPIOD, 2, 2, 0, 2, 8);
 
-	// 1. Désactive UART pendant config
+	// 1. Dï¿½sactive UART pendant config
 	UART5->CR1 &= ~BIT13;
 
 	// 2. Taille mot (8)
@@ -49,7 +49,7 @@ void UART5_Config(){
 	// Activer interrupt RXNEIE
 	UART5->CR1 |= BIT5;
 
-	// Parité paire
+	// Paritï¿½ paire
 	UART5->CR1 |= BIT10;
 	UART5->CR1 &= ~BIT9;
 
@@ -59,7 +59,6 @@ void UART5_Config(){
 
 	// 5. Baudrate de 115200 (APB1 a un prescaler de 4 selon system_stm32f4xx.c)
 	UART5->BRR = (uint16_t)(((SYS_CLOCK_FREQ / 4.0f) / (16.0f * 115200)) * 16.0f);
-
 
 	// 6. activer transmitter et receiver
 	UART5->CR1 |= BIT3;
@@ -83,7 +82,7 @@ uint8_t UART5_ReadByte(void) {
     return data;
 }
 
-// verifie flag pour savoir si transmission ou réception
+// verifie flag pour savoir si transmission ou rï¿½ception
 void UART5_IRQHandler(void){
 	uint8_t data;
 	uint8_t txdata;
@@ -91,11 +90,11 @@ void UART5_IRQHandler(void){
 	    if (_fifo_pop(&uart5_tx_fifo, &txdata)){
 	        UART5->DR = txdata & 0xFF;
 	    } else {
-	        UART5->CR1 &= ~BIT7;       // plus rien à envoyer, couper l'interrupt TXE
+	        UART5->CR1 &= ~BIT7;       // plus rien ï¿½ envoyer, couper l'interrupt TXE
 	    }
 	    }
-	if (UART5->SR & BIT5){ // réception en attente
-		data = (uint8_t)(UART5->DR & 0xFF); // 8 premier bits du registre DR, lire DR réinitialise le flag RXNE
+	if (UART5->SR & BIT5){ // rï¿½ception en attente
+		data = (uint8_t)(UART5->DR & 0x7F); // Lit 7 bits (data seulement)
 		_fifo_push(&uart5_rx_fifo, data);
 	}
 }
