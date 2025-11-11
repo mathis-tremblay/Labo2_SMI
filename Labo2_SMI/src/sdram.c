@@ -6,13 +6,20 @@
 #define SDRAM_BASE_ADDR  ((uint32_t)0xD0000000) // Bank2
 #define SDRAM_SIZE_BYTES ((uint32_t)0x00800000)   // 8 Mo (64 Mbits)
 
-#define SDRAM_TMRD  2    // tMRD = 2 cycles
-#define SDRAM_TXSR  3    // tXSR = 3 cycles
-#define SDRAM_TRAS  2    // tRAS = 2 cycles
-#define SDRAM_TRC   3    // tRC  = 3 cycles
-#define SDRAM_TWR   2    // tWR  = 2 cycles
-#define SDRAM_TRP   1    // tRP  = 1 cycle
-#define SDRAM_TRCD  1    // tRCD = 1 cycle
+void SDRAM_Init(void){
+	// Configuration des GPIOs requis
+	GPIO_Config(GPIOF, 0, 2, 0, 3, 12); // A0
+	GPIO_Config(GPIOF, 1, 2, 0, 3, 12); // A1
+	GPIO_Config(GPIOF, 2, 2, 0, 3, 12); // A2
+	GPIO_Config(GPIOF, 3, 2, 0, 3, 12); // A3
+	GPIO_Config(GPIOF, 4, 2, 0, 3, 12); // A4
+	GPIO_Config(GPIOF, 5, 2, 0, 3, 12); // A5
+	GPIO_Config(GPIOF, 12, 2, 0, 3, 12); // A6
+	GPIO_Config(GPIOF, 13, 2, 0, 3, 12); // A7
+	GPIO_Config(GPIOF, 14, 2, 0, 3, 12); // A8
+	GPIO_Config(GPIOF, 15, 2, 0, 3, 12); // A9
+	GPIO_Config(GPIOG, 0, 2, 0, 3, 12); // A10
+	GPIO_Config(GPIOG, 1, 2, 0, 3, 12); // A11
 
 #define SDRAM_TMRD  2    // tMRD = 2 cycles
 #define SDRAM_TXSR  3    // tXSR = 3 cycles
@@ -30,39 +37,26 @@ void SDRAM_Init(void)
                     RCC_AHB1ENR_GPIOFEN | RCC_AHB1ENR_GPIOGEN;
     RCC->AHB3ENR |= RCC_AHB3ENR_FMCEN;
 
-    /* 2) Configure toutes les broches SDRAM en AF12 (voir tableau du labo 4)
-       → Mode Alternate Function, Push-Pull, Very High Speed, No PUPD. */
-    // (à faire une seule fois : GPIO_ConfigurePin(port, pin, alt, …, AF12))
-    // Pour concision, non répété ici.
+	GPIO_Config(GPIOC, 0, 2, 0, 3, 12); // SDNWE
+	GPIO_Config(GPIOG, 8, 2, 0, 3, 12); // SDCLK
+	GPIO_Config(GPIOF, 11, 2, 0, 3, 12); // SDNRAS
+	GPIO_Config(GPIOG, 15, 2, 0, 3, 12); // SDNCAS
+	GPIO_Config(GPIOB, 5, 2, 0, 3, 12); // SDCKE1
+	GPIO_Config(GPIOB, 6, 2, 0, 3, 12); // SDNE1
 
-    /* 3) Configure les registres SDCR / SDTR */
-    // Bank 2 → SDCR[1] et SDTR[1]
-    FMC_Bank5_6->SDCR[1] =
-          (1 << 0)  |    // 16-bit data bus (MWID = 01)
-          (2 << 4)  |    // 12 row bits (NR = 2: 4096 rows)
-          (0 << 6)  |    // 8 col bits  (NC = 0)
-          (1 << 7)  |    // 4 banks (NB = 1)
-          (3 << 9)  |    // CAS latency = 3
-          (0 << 12) |    // Write protection off
-          (1 << 13) |    // Clock period = 2 HCLK (HCLK/2 = 36 MHz)
-          (1 << 14);     // Read pipe delay = 1 HCLK
+	GPIO_Config(GPIOG, 4, 2, 0, 3, 12); // BA0
+	GPIO_Config(GPIOG, 5, 2, 0, 3, 12); // BA1
 
-    FMC_Bank5_6->SDTR[1] =
-          ((SDRAM_TRCD - 1) << 0)  |
-          ((SDRAM_TRP  - 1) << 4)  |
-          ((SDRAM_TWR  - 1) << 8)  |
-          ((SDRAM_TRC  - 1) << 12) |
-          ((SDRAM_TRAS - 1) << 16) |
-          ((SDRAM_TXSR - 1) << 20) |
-          ((SDRAM_TMRD - 1) << 24);
+	GPIO_Config(GPIOE, 0, 2, 0, 3, 12); // NBL0
+	GPIO_Config(GPIOE, 1, 2, 0, 3, 12); // NBL1
 
     /* 4) Séquence d’initialisation (étapes RM0090 § 37.7.3) */
     // Étape 1 : Clock enable command
     FMC_Bank5_6->SDCMR = FMC_SDCMR_CTB2 | (1 << FMC_SDCMR_MODE_Pos);
     while (FMC_Bank5_6->SDSR & FMC_SDSR_BUSY);
 
-    // Étape 2 : délai ≥100 µs
-    for (volatile int i = 0; i < 100000; i++);
+	// number of banks = 4
+	FMC_Bank5_6->SDCR[1] |= BIT6;
 
     // Étape 3 : Precharge All
     FMC_Bank5_6->SDCMR = FMC_SDCMR_CTB2 | (2 << FMC_SDCMR_MODE_Pos);
