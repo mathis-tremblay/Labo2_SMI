@@ -42,7 +42,7 @@ SOFTWARE.
 
 //#define P1
 //#define P2
-#define P3
+#define P1
 
 /* Private macro */
 /* Private variables */
@@ -60,14 +60,26 @@ volatile uint64_t millis_count = 0;
 
 int main(void)
 {
+
 	#ifdef P1
-	SysTick_Init(9000); // interruption a chaque 1ms
+
+	while(1){
+
+	}
+
+	#endif
+
+}
+
+/* Labo 3 :
+#ifdef P1
+	SysTick_Init(SystemCoreClock); // interruption a chaque 1ms
 	UART5_Config();
 
 	uint8_t data_recu;
 	uint64_t last_hello = millis();
 	uint64_t timestamp = millis();
-	const char *hello = "Hello World!\n";
+	const char *hello = "MT";
 
 	while(1){
 		timestamp = millis();
@@ -87,14 +99,6 @@ int main(void)
 	#endif
 
 	#ifdef P2
-
-	/* ========================================ATTENTION========================================
-	 *
-	 * Pour une meilleur immersion, merci de blaster "Pursuit Of Happiness (nightmare edition)"
-	 * lors da la compilation et du test de cette partie.
-	 *
-	 * =========================================================================================
-	 */
 
 	SysTick_Init(SystemCoreClock);
 	// Configuration des pins GPIO avec SPI5
@@ -136,7 +140,7 @@ int main(void)
 	}
 
 	#endif
-}
+ */
 
 /*
  * Labo 2 :
