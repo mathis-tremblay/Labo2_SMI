@@ -203,10 +203,9 @@ void SDRAM_Init(void){
 }
 void SDRAM_Write(uint32_t address, uint16_t data) {
 
-    if (address >= 0x00800000) // 8 Mo maximum pour IS42S16400J (64 Mbits = 8 MB)
-        return;
+    if (address < 0x00800000) // 8 Mo maximum pour IS42S16400J (64 Mbits = 8 MB)
+    	*(__IO uint16_t*)(SDRAM_BASE_ADDR + address) = data;
 
-	*(__IO uint16_t*)(SDRAM_BASE_ADDR + address) = data;
 }
 
 

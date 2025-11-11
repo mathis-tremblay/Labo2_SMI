@@ -1,3 +1,4 @@
+#include "stm32f4xx.h"
 
 #ifndef SDRAM_H_
 #define SDRAM_H_
