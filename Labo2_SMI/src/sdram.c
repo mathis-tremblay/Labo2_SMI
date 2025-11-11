@@ -14,6 +14,14 @@
 #define SDRAM_TRP   1    // tRP  = 1 cycle
 #define SDRAM_TRCD  1    // tRCD = 1 cycle
 
+#define SDRAM_TMRD  2    // tMRD = 2 cycles
+#define SDRAM_TXSR  3    // tXSR = 3 cycles
+#define SDRAM_TRAS  2    // tRAS = 2 cycles
+#define SDRAM_TRC   3    // tRC  = 3 cycles
+#define SDRAM_TWR   2    // tWR  = 2 cycles
+#define SDRAM_TRP   1    // tRP  = 1 cycle
+#define SDRAM_TRCD  1    // tRCD = 1 cycle
+
 void SDRAM_Init(void)
 {
     /* 1) Active les horloges GPIO et FMC */
@@ -77,18 +85,15 @@ void SDRAM_Init(void)
 
     /* La SDRAM est maintenant opérationnelle. */
 }
-void SDRAM_Write(uint32_t address, uint16_t data) {
 
+void SDRAM_Write(uint32_t address, uint16_t data) {
     if (address < 0x00800000) // 8 Mo maximum pour IS42S16400J (64 Mbits = 8 MB)
     	*(__IO uint16_t*)(SDRAM_BASE_ADDR + address) = data;
-
 }
-
 
 
 uint16_t SDRAM_Read(uint32_t address)
 {
-
     if (address >= 0x00800000)
         return 0xFFFF; // Valeur d’erreur arbitraire
 
@@ -108,10 +113,12 @@ void SDRAM_WriteArray(uint32_t address, const uint16_t* data, uint32_t length)
     // Tronquer si ça depasse la taille de la SDRAM (evite overflow)
     uint32_t bytes_left   = SDRAM_SIZE_BYTES - address;
     uint32_t words_left   = bytes_left >> 1;            // bytes_left / 2
-    if (length > words_left) length = words_left;
+    if (length > words_left) {
+    	length = words_left;
+    }
 
     // Ecriture sequentielle
     for (uint32_t i = 0; i < length; ++i) {
             SDRAM_Write(address + (i << 1), data[i]);
-        }
+    }
 }
