@@ -13,9 +13,11 @@
 #include "spi.h"
 #include "GPIO.h"
 
+#define SDRAM_BASE  0xD0000000U  // Adresse base de la SDRAM Bank 2
+
 // variables locales
-static uint16_t frame_buffer[LCD_BUF_LEN];
-static uint8_t *frame_buffer_bytes = (uint8_t *)frame_buffer;
+static uint16_t *frame_buffer = (uint16_t *)SDRAM_BASE;
+static uint8_t  *frame_buffer_bytes = (uint8_t *)SDRAM_BASE;
 static uint8_t char_buff[CHAR_WIDTH_16*CHAR_HEIGHT_16*2] = {0};
 
 
