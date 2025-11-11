@@ -1,28 +1,6 @@
 #include "GPIO.h"
 
 void GPIO_writePIN(GPIO_TypeDef *GPIOx, uint16_t pin, uint8_t state) {
-	/*
-	 * ===================
-	 * Partie set pin to 1
-	 * ===================
-	 *
-	 * GPIOX : ptr vers l'adresse memoire d'un port
-	 * BSRR : Bit Set Reset Register
-	 * GPIOx->BSRR : adresse memoire de "Bit Set Reset Register" (BSRR) pour ce port
-	 * pin : masque de bit (ex : [HEX] 0x2000 -> [BIN] 0010 0000 0000 0000)
-	 * GPIOx->BSRR = (1 << pin) : decale 1 du num du pin
-	 *
-	 *
-	 * ===================
-	 * Partie set pin to 0
-	 * ===================
-	 * GPIOX : ptr vers l'adresse memoire d'un port
-	 * BSRR : Bit Set Reset Register
-	 * GPIOx->BSRR : adresse memoire de "Bit Set Reset Register" (BSRR) pour ce port
-	 * pin  : masque de bit (ex : [HEX] 0x2000 -> [BIN] 0010 0000 0000 0000)
-	 * GPIOx->BSRR = (1 << (pin + 16) : decale 1 du num du pin + 16 (toujours a 0)
-	 *
-	 */
 	if (state) {
 		// set pin to 1
 		GPIOx->BSRRL = (1 << pin);
