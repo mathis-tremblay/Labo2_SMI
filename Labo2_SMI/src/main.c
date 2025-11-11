@@ -39,6 +39,7 @@ SOFTWARE.
 #include "spi.h"
 #include "lcd_driver_src/lcd_driver.h"
 #include "affichage.h"
+#include "sdram.h"
 
 //#define P1
 //#define P2
@@ -63,6 +64,20 @@ int main(void)
 
 	#ifdef P1
 
+	SysTick_Init(SystemCoreClock);
+	//SDRAM_Init();
+	Affichage_Init();
+	Affichage_SetCharColor(0, 0, 0);
+	// Écran rouge
+	Affichage_SetBgColor(255, 0, 0);
+	Affichage_UpdateBg();
+	delai(500);
+	// Écran vert
+	Affichage_SetBgColor(0, 255, 0);
+	Affichage_UpdateBg();
+	delai(500);
+	Affichage_SetBgColor(0, 0, 0);
+	Affichage_UpdateBg();
 	while(1){
 
 	}

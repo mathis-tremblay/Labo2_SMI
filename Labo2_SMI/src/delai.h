@@ -3,7 +3,7 @@
 #ifndef DELAI_H_
 #define DELAI_H_
 
-void SysTick_Init(uint32_t load_value);
+void SysTick_Init(uint32_t sysclk_hz);
 
 uint64_t millis();
 
