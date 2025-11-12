@@ -17,8 +17,6 @@
 
 // variables locales
 static uint8_t *frame_buffer_bytes = (uint8_t *)SDRAM_BASE;
-//static uint16_t frame_buffer[LCD_BUF_LEN];
-//static uint8_t *frame_buffer_bytes = (uint8_t *)frame_buffer;
 static uint8_t char_buff[CHAR_WIDTH_16*CHAR_HEIGHT_16*2] = {0};
 
 
