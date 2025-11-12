@@ -67,19 +67,10 @@ int main(void)
 	SysTick_Init(SystemCoreClock);
 	SDRAM_Init();
 
-	// test init sdram
-	/*uint16_t *p = (uint16_t *)0xD0000000U;
-	p[0] = 0xABCD;
-	if (p[0] != 0xABCD){
-	    while(1); // SDRAM pas initialisée
-	}*/
 	Affichage_Init();
 	Affichage_SetCharColor(0, 0, 0);
 	while(1){
 		// Ecran rouge
-		LCD_CopyColorToFrameBuffer(63488); // Rouge
-		LCD_TransmitFrameBuffer();
-		/*
 		Affichage_SetBgColor(255, 0, 0);
 		Affichage_UpdateBg();
 		delai(500);
@@ -90,7 +81,7 @@ int main(void)
 		// Ecran noir
 		Affichage_SetBgColor(0, 0, 0);
 		Affichage_UpdateBg();
-		delai(500);*/
+		delai(500);
 	}
 
 	#endif
