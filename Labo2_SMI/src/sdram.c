@@ -58,18 +58,19 @@ void SDRAM_Init(void){
 
 	// Etape 1 : config FMC_SDCR1
 	// RPIPE a 1
-	FMC_Bank5_6->SDCR[1] &= ~(BIT14|BIT13);
-	FMC_Bank5_6->SDCR[1] |= BIT13;
+	FMC_Bank5_6->SDCR[0] &= ~(BIT14|BIT13);
+	FMC_Bank5_6->SDCR[0] |= BIT13;
 
 	// Clk a HCLK/2
-	FMC_Bank5_6->SDCR[1] &= ~(BIT11|BIT10);
-	FMC_Bank5_6->SDCR[1] |= BIT11;
+	FMC_Bank5_6->SDCR[0] &= ~(BIT11|BIT10);
+	FMC_Bank5_6->SDCR[0] |= BIT11;
 
 	// NCAS a 3 coups d'horloges
 	FMC_Bank5_6->SDCR[1] &= ~(BIT8|BIT7);
 	FMC_Bank5_6->SDCR[1] |= (BIT8|BIT7);
 
 	// désactiver burst mode / write protection
+	FMC_Bank5_6->SDCR[0] &= ~(BIT12|BIT9);
 	FMC_Bank5_6->SDCR[1] &= ~(BIT12|BIT9);
 
 	// number of banks = 4
@@ -98,6 +99,10 @@ void SDRAM_Init(void){
 	FMC_Bank5_6->SDTR[1] &= ~BIT22;
 	FMC_Bank5_6->SDTR[1] &= ~BIT21;
 	FMC_Bank5_6->SDTR[1] &= ~BIT20;
+	FMC_Bank5_6->SDTR[0] &= ~BIT23;
+	FMC_Bank5_6->SDTR[0] &= ~BIT22;
+	FMC_Bank5_6->SDTR[0] &= ~BIT21;
+	FMC_Bank5_6->SDTR[0] &= ~BIT20;
 
 	// Twr 2 cycles
 	FMC_Bank5_6->SDTR[1] &= ~BIT19;
@@ -110,6 +115,10 @@ void SDRAM_Init(void){
 	FMC_Bank5_6->SDTR[1] &= ~BIT14;
 	FMC_Bank5_6->SDTR[1] |= BIT13;
 	FMC_Bank5_6->SDTR[1] &= ~BIT12;
+	FMC_Bank5_6->SDTR[0] &= ~BIT15;
+	FMC_Bank5_6->SDTR[0] &= ~BIT14;
+	FMC_Bank5_6->SDTR[0] |= BIT13;
+	FMC_Bank5_6->SDTR[0] &= ~BIT12;
 
 	// Tras 2 cycles
 	FMC_Bank5_6->SDTR[1] &= ~BIT11;
