@@ -9,6 +9,8 @@
 static FIFO uart5_rx_fifo = { .tete = 0, .queue = 0 };
 static FIFO uart5_tx_fifo = { .tete = 0, .queue = 0 };
 
+static int ledState = 0;
+static volatile int X = 1;//000000;
 
 int _fifo_pleine(FIFO* f){
 	return ((f->tete + 1) % UART5_FIFO_TAILLE) == f->queue;
@@ -69,6 +71,9 @@ void UART5_Config(){
 
 	// activer interrupt NVIC
 	NVIC->ISER[1] = BIT21;
+
+	// config pour LED PG13
+	GPIO_Config(GPIOG, 13, 1, 0, 0, 0);
 }
 
 void UART5_SendByte(uint8_t data) {
@@ -84,6 +89,7 @@ uint8_t UART5_ReadByte(void) {
 
 // verifie flag pour savoir si transmission ou r�ception
 void UART5_IRQHandler(void){
+	GPIO_writePIN(GPIOG, 13, 1);
 	uint8_t data;
 	uint8_t txdata;
 	if (UART5->SR & BIT7){ // TXE
@@ -95,6 +101,21 @@ void UART5_IRQHandler(void){
 	    }
 	if (UART5->SR & BIT5){ // r�ception en attente
 		data = (uint8_t)(UART5->DR & 0x7F); // Lit 7 bits (data seulement)
-		_fifo_push(&uart5_rx_fifo, data);
+		//_fifo_push(&uart5_rx_fifo, data);
+		LCD_WriteChar(data, 100, 2000, 10, 200);
+		GPIO_writePIN(GPIOG, 13, 0);
+
+		//for(int i=0; i<X; i++);
 	}
+
+//	if (ledState)
+//	{
+//		ledState = 0;
+//	}
+//	else
+//	{
+//		ledState = 1;
+//	}
+//	GPIO_writePIN(GPIOG, 13, ledState);
+
 }

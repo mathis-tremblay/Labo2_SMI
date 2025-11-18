@@ -42,8 +42,7 @@ SOFTWARE.
 #include "sdram.h"
 
 //#define P1
-//#define P2
-#define P1
+#define P2
 
 /* Private macro */
 /* Private variables */
@@ -108,7 +107,7 @@ int main(void)
 
 		tmp_data = SDRAM_Read(rand_addr);
 
-		// "Dépacker" le mot de 16 bits en deux caractères 8 bits
+		// "Dï¿½packer" le mot de 16 bits en deux caractï¿½res 8 bits
 		buffer_data[i * 2]     = (tmp_data & 0x00FF);
 		buffer_data[i * 2 + 1] = (tmp_data >> 8);
 	}
@@ -121,6 +120,61 @@ int main(void)
 
 	while(1){
 
+	}
+
+#endif
+
+#ifdef P2
+	SysTick_Init(SystemCoreClock); // interruption a chaque 1ms
+	UART5_Config();
+	Affichage_Init();
+
+	Affichage_SetBgColor(31, 63, 31);
+	Affichage_SetCharColor(0, 0, 0);
+	Affichage_UpdateBg();
+
+	uint8_t data_recu;
+	char rx_buffer[256];
+	int rx_index = 0;
+	memset(rx_buffer, 0, 256);
+	rx_index = 0;
+
+	uint64_t last_hello = millis();
+	uint64_t timestamp = millis();
+	const char *hello = "Hello World!";
+
+	while(1){
+
+// DECOMMENTER POUR LA PARTIE 2.1
+//		timestamp = millis();
+//		if (timestamp - last_hello > 1000){ // envoie pï¿½riodique de Hello World
+//			for (uint32_t i = 0; hello[i] != '\0'; i++){
+//				UART5_SendByte(hello[i]);
+//			}
+//			last_hello = timestamp;
+//		}
+
+		data_recu = UART5_ReadByte();
+		if (data_recu != 0)
+		{
+			UART5_SendByte(data_recu);
+
+			if (data_recu == '\n' || data_recu == '\r')
+			{
+				rx_buffer[rx_index] = (char)data_recu;
+				rx_buffer[rx_index + 1] = '\0';
+
+				Affichage_ProcessString(rx_buffer);
+
+				memset(rx_buffer, 0, 256);
+				rx_index = 0;
+			}
+			else if (rx_index < 256 - 2)
+			{
+				rx_buffer[rx_index] = (char)data_recu;
+				rx_index++;
+			}
+		}
 	}
 
 #endif
